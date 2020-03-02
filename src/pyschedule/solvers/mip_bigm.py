@@ -28,7 +28,7 @@ import collections
 
 
 
-def solve(scenario, bigm=10000, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0):
+def solve(scenario, bigm=10000, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0, keep_files=0):
 	"""
 	Solves the given scenario using a bigm-type MIP
 
@@ -49,7 +49,7 @@ def solve(scenario, bigm=10000, kind='CBC', time_limit=None, random_seed=None, r
 	scenario.check()
 	mip = MIP(str(scenario))
 	return ContinuousMIP(mip).solve(scenario, bigm=bigm, kind=kind, time_limit=time_limit, random_seed=random_seed,
-									ratio_gap=ratio_gap, msg=msg)
+									ratio_gap=ratio_gap, msg=msg, keep_files=0)
 
 
 class ContinuousMIP(object):
@@ -262,7 +262,7 @@ class ContinuousMIP(object):
 					task_resources.append(resource)
 			T.resources = task_resources
 
-	def solve(self, scenario, bigm=10000, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0):
+	def solve(self, scenario, bigm=10000, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0, keep_files=0):
 
 		self.scenario = scenario
 		self.horizon = self.scenario.horizon
