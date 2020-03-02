@@ -7,10 +7,12 @@ import pulp.solvers
 
 class SCIP_CMD(pulp.solvers.LpSolver_CMD):
     def __init__(self, path = None, keepFiles = 0, mip = 1,
-            msg = 0, options = [], time_limit = None, ratio_gap = None):
+            msg = 0, options = [], time_limit = None, ratio_gap = None
+            parallel = 0):
         pulp.solvers.LpSolver_CMD.__init__(self, path, keepFiles, mip, msg, options)
         self.time_limit = time_limit
         self.ratio_gap = ratio_gap
+        self.parallel = parallel
 
     """The SCIP LP solver"""
     def defaultPath(self):
@@ -32,13 +34,16 @@ class SCIP_CMD(pulp.solvers.LpSolver_CMD):
             tmpLp = lp.name+"-pulp.lp"
             tmpSol = lp.name+"-pulp.sol"
         lp.writeLP(tmpLp, writeSOS = 0)
-        #proc = ["scip", "-c", "read \"%s\"" % tmpLp, "-c", "set limits time 180", "-c", "optimize", "-c", "write solution \"%s\"" % tmpSol, "-c", "quit"]
+        
         proc = ["scip", "-c", "read \"%s\"" % tmpLp]
         if self.time_limit is not None:
             proc += ["-c", "set limits time %f"%self.time_limit]
         if self.ratio_gap is not None:
             proc += ["-c", "set limits gap %f"%self.ratio_gap]
-        proc += ["-c", "optimize", "-c", "write solution \"%s\"" % tmpSol, "-c", "quit"]
+        if self.parallel:
+            proc += ["-c", "concurrentopt", "-c", "write solution \"%s\"" % tmpSol, "-c", "quit"]
+        else:
+            proc += ["-c", "optimize", "-c", "write solution \"%s\"" % tmpSol, "-c", "quit"]
         proc.extend(self.options)
 
         self.solution_time = clock()
