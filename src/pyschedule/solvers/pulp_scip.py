@@ -26,13 +26,12 @@ class SCIP_CMD(pulp.solvers.LpSolver_CMD):
         """Solve a well formulated lp problem"""
         if not self.executable(self.path):
             raise pulp.PulpSolverError("PuLP: cannot execute "+self.path)
-        if not self.keepFiles:
+        # always in tmp
+        if True:
             pid = os.getpid()
             tmpLp = os.path.join(self.tmpDir, "%d-pulp.lp" % pid)
             tmpSol = os.path.join(self.tmpDir, "%d-pulp.sol" % pid)
-        else:
-            tmpLp = lp.name+"-pulp.lp"
-            tmpSol = lp.name+"-pulp.sol"
+
         lp.writeLP(tmpLp, writeSOS = 0)
         
         proc = ["scip", "-c", "read \"%s\"" % tmpLp]
