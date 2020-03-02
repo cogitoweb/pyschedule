@@ -77,6 +77,12 @@ class MIP(object):
 		ratio_gap = None
 		if 'ratio_gap' in kwarg:
 			ratio_gap = float(kwarg['ratio_gap'])
+		keep_files = 0
+		if 'keep_files' in kwarg:
+			keep_files = int(kwarg['keep_files'])
+		parallel = 0
+		if 'parallel' in kwarg:
+			parallel = int(kwarg['parallel'])
 		start_time = time.time()
 		# select solver for pl
 		if kind == 'CPLEX':
@@ -88,7 +94,7 @@ class MIP(object):
 		elif kind == 'GLPK':
 			self.mip.solve(pl.GLPK_CMD(msg=msg))
 		elif kind == 'SCIP':
-			self.mip.solve(SCIP_CMD(msg=msg,time_limit=time_limit,ratio_gap=ratio_gap))
+			self.mip.solve(SCIP_CMD(msg=msg,parallel=parallel,keep_files=keep_files,time_limit=time_limit,ratio_gap=ratio_gap))
 		elif kind == 'CBC' or kind == 'COIN':
 			options = []
 			if time_limit is not None:
