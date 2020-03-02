@@ -73,7 +73,7 @@ def solve(scenario, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0
 	"""
 	scenario.check()
 	mip = MIP(str(scenario))
-	return DiscreteMIP(mip).solve(scenario, kind=kind, time_limit=time_limit, random_seed=random_seed, ratio_gap=ratio_gap, msg=msg, keep_files=0)
+	return DiscreteMIP(mip).solve(scenario, kind=kind, time_limit=time_limit, random_seed=random_seed, ratio_gap=ratio_gap, msg=msg, keep_files=keep_files)
 
 
 class DiscreteMIP(object):
