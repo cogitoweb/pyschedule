@@ -94,7 +94,7 @@ class MIP(object):
 		elif kind == 'GLPK':
 			self.mip.solve(pl.GLPK_CMD(msg=msg))
 		elif kind == 'SCIP':
-			self.mip.solve(SCIP_CMD(msg=msg,parallel=parallel,keep_files=keep_files,time_limit=time_limit,ratio_gap=ratio_gap))
+			self.mip.solve(SCIP_CMD(msg=msg,parallel=parallel,keepFiles=keep_files,time_limit=time_limit,ratio_gap=ratio_gap))
 		elif kind == 'CBC' or kind == 'COIN':
 			options = []
 			if time_limit is not None:
