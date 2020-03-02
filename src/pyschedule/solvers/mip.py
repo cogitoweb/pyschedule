@@ -55,7 +55,7 @@ def _get_resource_groups(scenario):
 	return _get_groups(scenario,elements)
 
 
-def solve(scenario, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0):
+def solve(scenario, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0, keep_files=0):
 	"""
 	Solves the given scenario using a discrete MIP
 
@@ -73,7 +73,7 @@ def solve(scenario, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0
 	"""
 	scenario.check()
 	mip = MIP(str(scenario))
-	return DiscreteMIP(mip).solve(scenario, kind=kind, time_limit=time_limit, random_seed=random_seed, ratio_gap=ratio_gap, msg=msg)
+	return DiscreteMIP(mip).solve(scenario, kind=kind, time_limit=time_limit, random_seed=random_seed, ratio_gap=ratio_gap, msg=msg, keep_files=0)
 
 
 class DiscreteMIP(object):
@@ -596,7 +596,7 @@ class DiscreteMIP(object):
 
 
 
-	def solve(self, scenario, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0):
+	def solve(self, scenario, kind='CBC', time_limit=None, random_seed=None, ratio_gap=0.0, msg=0, keep_files=0):
 
 		self.scenario = scenario
 		if self.scenario.horizon is None:
