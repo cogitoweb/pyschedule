@@ -4,6 +4,10 @@ import re
 import subprocess
 import pulp
 import pulp.solvers
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 class SCIP_CMD(pulp.solvers.LpSolver_CMD):
     def __init__(self, path = None, keepFiles = 0, mip = 1,
@@ -27,30 +31,51 @@ class SCIP_CMD(pulp.solvers.LpSolver_CMD):
         if not self.executable(self.path):
             raise pulp.PulpSolverError("PuLP: cannot execute "+self.path)
         # always in tmp
-        if True:
-            pid = os.getpid()
-            tmpLp = os.path.join(self.tmpDir, "%d-pulp.lp" % pid)
-            tmpSol = os.path.join(self.tmpDir, "%d-pulp.sol" % pid)
 
-        lp.writeLP(tmpLp, writeSOS = 0)
-        
+        # [TODO] as a paramter
+        tmpramdisk = '/tmpram'
+        localtmpDir = self.tmpDir
+        if os.path.exists('/tmpram'):
+            localtmpDir = tmpramdisk
+
+        if True:
+            # clean up
+
+            for line in subprocess.check_output(
+              "find %s -iname '*pulp.*'" % localtmpDir,
+              shell=True).splitlines():
+                os.remove(line)
+
+            # create new
+
+            pid = os.getpid()
+            tmpLp = os.path.join(localtmpDir, "%d-pulp.lp" % pid)
+            tmpSol = os.path.join(localtmpDir, "%d-pulp.sol" % pid)
+
+        _logger.info("SCIP writing LP")
+        lp.writeLP(tmpLp, writeSOS=0)
+
         proc = ["scip", "-c", "read \"%s\"" % tmpLp]
         if self.time_limit is not None:
-            proc += ["-c", "set limits time %f"%self.time_limit]
+            proc += ["-c", "set limits time %f" % self.time_limit]
         if self.ratio_gap is not None:
-            proc += ["-c", "set limits gap %f"%self.ratio_gap]
+            proc += ["-c", "set limits gap %f" % self.ratio_gap]
         if self.parallel:
             proc += ["-c", "concurrentopt", "-c", "write solution \"%s\"" % tmpSol, "-c", "quit"]
         else:
             proc += ["-c", "optimize", "-c", "write solution \"%s\"" % tmpSol, "-c", "quit"]
         proc.extend(self.options)
 
+        _logger.info("SCIP start REAL SOLVING PROCESS")
+
         self.solution_time = clock()
         if not self.msg:
             proc[0] = self.path
             pipe = open(os.devnull, 'w')
-            rc = subprocess.call(proc, stdout = pipe,
-                             stderr = pipe)
+            rc = subprocess.call(
+                proc, stdout=pipe,
+                stderr=pipe
+            )
             if rc:
                 raise pulp.PulpSolverError("PuLP: Error while trying to execute "+self.path)
         else:
@@ -105,5 +130,6 @@ class SCIP_CMD(pulp.solvers.LpSolver_CMD):
                 name, val, _ = line.split()
                 values[name] = float(val)
         return status, values
+
 
 SCIP = SCIP_CMD

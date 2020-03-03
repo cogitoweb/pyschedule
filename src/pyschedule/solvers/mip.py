@@ -617,6 +617,7 @@ class DiscreteMIP(object):
 		#params['cuts'] = 'off'
 		params['ratio_gap'] = str(ratio_gap)
 		params['kind'] = kind
+		params['keep_files'] = keep_files
 		self.mip.solve(msg=msg,**params)
 
 		#print([ self.x[scenario['T1_e'],scenario['R1'],i].value() for i in range(scenario.horizon) ])
